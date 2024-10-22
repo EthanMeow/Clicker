@@ -14,6 +14,8 @@ public class AutoMoneyManager : MonoBehaviour
 
     void Start()
     {
+        LoadAutoIncreaseData(); // Load the saved purchase count and auto increase amount
+        centralMoneyManager.LoadMoney(); // Load saved money value
         timer = autoIncreaseInterval; // Set the initial timer
     }
 
@@ -38,7 +40,7 @@ public class AutoMoneyManager : MonoBehaviour
         // Check if there's enough money to purchase
         if (centralMoneyManager.money >= currentCostToBuy)
         {
-            centralMoneyManager.money -= currentCostToBuy; // Deduct the purchase cost
+            centralMoneyManager.SubtractMoney(currentCostToBuy); // Deduct the purchase cost
             purchaseCount++; // Increment the purchase counter
             totalAutoIncreases++; // Increment the total auto increases
 
@@ -46,6 +48,7 @@ public class AutoMoneyManager : MonoBehaviour
             autoIncreaseAmount += 1;
 
             centralMoneyManager.UpdateMoneyText(); // Update the displayed text
+            SaveAutoIncreaseData(); // Save the updated data
 
             Debug.Log($"Purchased auto increase! Total purchases: {purchaseCount}, Total auto increases: {totalAutoIncreases}, Auto Increase Amount: {autoIncreaseAmount}");
         }
@@ -59,5 +62,30 @@ public class AutoMoneyManager : MonoBehaviour
     {
         centralMoneyManager.money += autoIncreaseAmount; // Increase money automatically
         centralMoneyManager.UpdateMoneyText(); // Update the displayed text
+        centralMoneyManager.SaveMoney(); // Save the updated money after automatic increase
+    }
+
+    // Save the purchase count and auto increase amount using PlayerPrefs
+    public void SaveAutoIncreaseData()
+    {
+        PlayerPrefs.SetInt("AutoIncreasePurchaseCount", purchaseCount);
+        PlayerPrefs.SetInt("AutoIncreaseAmount", autoIncreaseAmount);
+        PlayerPrefs.Save();
+        Debug.Log($"Auto Increase Data Saved: PurchaseCount = {purchaseCount}, AutoIncreaseAmount = {autoIncreaseAmount}");
+    }
+
+    // Load the purchase count and auto increase amount from PlayerPrefs
+    public void LoadAutoIncreaseData()
+    {
+        if (PlayerPrefs.HasKey("AutoIncreasePurchaseCount"))
+        {
+            purchaseCount = PlayerPrefs.GetInt("AutoIncreasePurchaseCount");
+            autoIncreaseAmount = PlayerPrefs.GetInt("AutoIncreaseAmount", autoIncreaseAmount); // Default to current value if none saved
+            Debug.Log($"Auto Increase Data Loaded: PurchaseCount = {purchaseCount}, AutoIncreaseAmount = {autoIncreaseAmount}");
+        }
+        else
+        {
+            Debug.Log("No saved auto increase data found. Using default values.");
+        }
     }
 }

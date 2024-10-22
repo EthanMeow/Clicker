@@ -60,4 +60,10 @@ public class AutoMoneyManager2 : MonoBehaviour
         centralMoneyManager.money += autoIncreaseAmount2; // Increase money automatically
         centralMoneyManager.UpdateMoneyText(); // Update the displayed text
     }
+
+    // Method to get the current cost of the auto increase
+    public int GetCurrentCost()
+    {
+        return baseCostToBuy2 * (purchaseCount2 + 1);
+    }
 }
